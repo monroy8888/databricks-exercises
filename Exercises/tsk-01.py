@@ -111,4 +111,47 @@ df_fix_date1.show()
 
 # COMMAND ----------
 
+import random
+#print(dir(random))
+print(help(random.randint))
+
+# COMMAND ----------
+
+random_salary_udf = udf(lambda: random.randint(1000, 10000), IntegerType())
+
+# COMMAND ----------
+
+df_salary_random = df_fix_date1.withColumn('Salary', random_salary_udf())
+df_salary_random.orderBy('Salary').show()
+
+# COMMAND ----------
+
+df_salary_random.groupBy('fname', 'lname').agg(count(col('phone'))).show()
+
+# COMMAND ----------
+
+df_salary_random.head(2)
+
+# COMMAND ----------
+
+data_dict = df_salary_random.toPandas().to_dict(orient='records')
+print(data_dict)
+
+# COMMAND ----------
+
+from itertools import groupby
+
+print({k : list(v) for k, v in groupby(data_dict, lambda x:x['id'])})
+
+# COMMAND ----------
+
+sorted_values = sorted([i for i in data_dict], key= lambda x: x['Salary'])
+print([i['id'] for i in sorted_values])
+
+# COMMAND ----------
+
+map_values = print(list(map(lambda x: 'Yes' if x['id'] in range(0, 105) else 'No' , [i for i in data_dict])))
+
+# COMMAND ----------
+
 
